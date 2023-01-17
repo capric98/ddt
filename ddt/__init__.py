@@ -5,3 +5,4 @@ DDT
 """
 
 from . import translator
+from . import umamusume
