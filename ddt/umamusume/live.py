@@ -2,7 +2,7 @@
 from os import path
 from dataclasses import dataclass
 
-from . import UmaMeta, UmaMaster
+from . import UmaBlob, UmaMeta, UmaMaster
 
 
 MASTER_ID = 16
@@ -13,14 +13,18 @@ MASTER_CATEGORY = 16
 class UmaLive:
     music_id: str
     name:     str
-    assets:   list[str]
-
+    assets:   list[UmaBlob]
     def __str__(self) -> str:
         return f"[{self.music_id}] {self.name}"
 
 
 def _select_assets(master: UmaMaster, keyword: str) -> list[str]:
-    return [asset[1] for asset in master.execute(f"SELECT * FROM a WHERE n like ('{keyword}')").fetchall()]
+    return [UmaBlob(
+        type = item[7],
+        id = item[0],
+        hash = item[6],
+        path = item[1],
+    ) for item in master.execute(f"SELECT * FROM a WHERE n like ('{keyword}')").fetchall()]
 
 
 def get_live_list(meta: UmaMeta=None, master: UmaMaster=None, text_data: str="text_data") -> list[UmaLive]:

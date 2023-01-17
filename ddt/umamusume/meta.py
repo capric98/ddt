@@ -13,9 +13,15 @@ _MANIFEST_TABLE_NAME = "a"
 
 @dataclass
 class UmaBlob:
+    type: str
     id  : int
     path: str
     hash: str
+    def __post_init__(self) -> None:
+        if self.path.startswith("//"):
+            self.path = path.join(self.type, self.path[2:])
+        else:
+            self.path = path.join(self.type, *(self.path.split("/")))
     def __str__(self) -> str:
         return "(UmaBlob) {} from [{}] {}".format(
             self.path,
@@ -23,8 +29,15 @@ class UmaBlob:
         )
     def real_path(self, base: str) -> str:
         return path.join(base, "dat", self.hash[:2], self.hash)
-    def download_url(self, endpoint: str="https://prd-storage-umamusume.akamaized.net"):
-        pass
+
+    @property
+    def download_url(self, endpoint: str="https://prd-storage-game-umamusume.akamaized.net/dl/resources"):
+        if self.type in ["sound", "movie", "font"]:
+            return f"{endpoint}/Generic/{self.hash[:2]}/{self.hash}"
+        elif self.type.startswith("manifest"):
+            return f"{endpoint}/Manifest/{self.hash[:2]}/{self.hash}"
+        else:
+            return f"{endpoint}/Windows/assetbundles/{self.hash[:2]}/{self.hash}"
 
 
 class UmaMeta():
@@ -49,12 +62,7 @@ class UmaMeta():
             blob_hash = row[6]
             blob_type = row[7]
 
-            if blob_path.startswith("//"):
-                blob_path = path.join(blob_type, blob_path[2:])
-            else:
-                blob_path = path.join(blob_type, *(blob_path.split("/")))
-
-            yield UmaBlob(blob_id, blob_path, blob_hash)
+            yield UmaBlob(blob_type, blob_id, blob_path, blob_hash)
 
 
 if __name__=="__main__":
