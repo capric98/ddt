@@ -23,7 +23,7 @@ def _select_assets(master: UmaMaster, keyword: str) -> list[str]:
     return [asset[1] for asset in master.execute(f"SELECT * FROM a WHERE n like ('{keyword}')").fetchall()]
 
 
-def live_list(meta: UmaMeta=None, master: UmaMaster=None, text_data: str="text_data") -> list[UmaLive]:
+def get_live_list(meta: UmaMeta=None, master: UmaMaster=None, text_data: str="text_data") -> list[UmaLive]:
     default_base = path.join(
         path.expanduser("~"),
         "AppData", "LocalLow", "Cygames", "umamusume"
