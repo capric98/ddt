@@ -6,10 +6,11 @@ cwd = Path(__file__).resolve().parent
 sys.path.append(str(cwd.parent))
 
 from os import path, makedirs, getenv
-from ddt.umamusume import get_live_list
+from ddt.umamusume import get_live_list, lyrics_to_srt
 
 
-DOWNLOAD_PATH = path.join("env", "umamusume-live")
+DOWNLOAD_PATH = path.join("downloads", "umamusume-live")
+
 
 
 if __name__=="__main__":
@@ -62,3 +63,14 @@ if __name__=="__main__":
             end  = time.time()
             dura = end - start
             print(f"download {blob.path} in {dura:.2f}s")
+
+    print("\nAssets ✔️")
+
+
+    if not path.exists(path.join(DOWNLOAD_PATH, str(live), "extract")):
+        makedirs(path.join(DOWNLOAD_PATH, str(live), "extract"))
+
+    lyrics_to_srt(
+        path.join(DOWNLOAD_PATH, str(live), "musicscores", f"m{todo}_lyrics"),
+        path.join(DOWNLOAD_PATH, str(live), "extract", f"m{todo}_lyrics.srt"),
+    )
