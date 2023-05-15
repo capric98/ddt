@@ -7,6 +7,7 @@ def __mstime_to_str(t: int) -> str:
     min = min - hour*60
     return "{:02d}:{:02d}:{:02d},{:03d}".format(hour, min, seconds, ms)
 
+
 def lyrics_to_srt(input, output):
 
     import UnityPy
@@ -38,3 +39,24 @@ def lyrics_to_srt(input, output):
 
         print("{}".format(__mstime_to_str(int(content[0]))), file=f)
         print(last_lyric, file=f)
+
+
+
+def __motion_data(fn):
+
+    import UnityPy
+
+    for obj in UnityPy.load("anm_liv_son1033_1st").objects:
+        if obj.type.name=="AnimationClip":
+            for v in obj.read().m_RotationCurves:
+                print(v.path)
+                for crv in v.curve.m_Curve:
+                    print(crv.time)
+                    print(crv.value.X, crv.value.Y, crv.value.Z, crv.value.W)
+                    print(crv.inSlope)
+                    print(crv.outSlope)
+                    print(crv.weightedMode)
+                    print(crv.inWeight)
+                    print(crv.outWeight)
+                    break
+            break
