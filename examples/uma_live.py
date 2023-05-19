@@ -6,7 +6,7 @@ cwd = Path(__file__).resolve().parent
 sys.path.append(str(cwd.parent))
 
 from os import path, makedirs, getenv
-from ddt.umamusume import get_live_list, lyrics_to_srt
+from ddt.umamusume import get_live_list, lyrics_to_srt, motion_to_json
 
 
 DOWNLOAD_PATH = path.join("downloads", "umamusume-live")
@@ -73,4 +73,19 @@ if __name__=="__main__":
     lyrics_to_srt(
         path.join(DOWNLOAD_PATH, str(live), "musicscores", f"m{todo}_lyrics"),
         path.join(DOWNLOAD_PATH, str(live), "extract", f"m{todo}_lyrics.srt"),
+    )
+
+    # motion_to_json(
+    #     [
+    #         path.join(DOWNLOAD_PATH, str(live), "_3d_cutt", "3d", "motion", "live", "body", f"son{todo}", f"anm_liv_son{todo}_1st"),
+    #         path.join(DOWNLOAD_PATH, str(live), "_3d_cutt", "3d", "motion", "live", "body", f"son{todo}", f"anm_liv_son{todo}_1st_ik_base"),
+    #         path.join(DOWNLOAD_PATH, str(live), "_3d_cutt", "3d", "motion", "live", "body", f"son{todo}", f"anm_liv_son{todo}_1st_ik_l"),
+    #         path.join(DOWNLOAD_PATH, str(live), "_3d_cutt", "3d", "motion", "live", "body", f"son{todo}", f"anm_liv_son{todo}_1st_ik_r"),
+    #     ],
+    #     path.join(DOWNLOAD_PATH, str(live), "extract", f"anm_liv_son{todo}_1st_full.json")
+    # )
+
+    motion_to_json(
+        path.join(DOWNLOAD_PATH, str(live), "_3d_cutt", "3d", "motion", "live", "body", f"son{todo}", f"anm_liv_son{todo}_1st"),
+        path.join(DOWNLOAD_PATH, str(live), "extract", f"anm_liv_son{todo}_1st.json")
     )

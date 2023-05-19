@@ -42,21 +42,93 @@ def lyrics_to_srt(input, output):
 
 
 
-def __motion_data(fn):
-
+def __parse_motion(fn):
     import UnityPy
 
-    for obj in UnityPy.load("anm_liv_son1033_1st").objects:
-        if obj.type.name=="AnimationClip":
-            for v in obj.read().m_RotationCurves:
-                print(v.path)
-                for crv in v.curve.m_Curve:
-                    print(crv.time)
-                    print(crv.value.X, crv.value.Y, crv.value.Z, crv.value.W)
-                    print(crv.inSlope)
-                    print(crv.outSlope)
-                    print(crv.weightedMode)
-                    print(crv.inWeight)
-                    print(crv.outWeight)
-                    break
-            break
+    rotation_curves = []
+    position_curves = []
+    scale_curves = []
+
+    for f in fn:
+        for obj in UnityPy.load(f).objects:
+            # print(obj.type.name)
+            if obj.type.name=="AnimationClip":
+                clip = obj.read()
+                break
+
+        # print("================================================")
+        # print("====================Rotation====================")
+
+
+        for v in clip.m_RotationCurves:
+            # print(v.path, len(v.curve.m_Curve))
+            # if v.path not in path_list: path_list.append(v.path)
+            m_Curve = []
+            for crv in v.curve.m_Curve:
+                # print(crv)
+                # print(crv.time) # The time of the keyframe.
+                # print(crv.value.X, crv.value.Y, crv.value.Z, crv.value.W)
+                # print(crv.inSlope.X, crv.inSlope.Y, crv.inSlope.Z, crv.inSlope.W)
+                # print(crv.outSlope.X, crv.outSlope.Y, crv.outSlope.Z, crv.outSlope.W)
+                # print(crv.weightedMode) # https://docs.unity3d.com/ScriptReference/WeightedMode.html
+                # print(crv.inWeight.X, crv.inWeight.Y, crv.inWeight.Z, crv.inWeight.W)
+                # print(crv.outWeight.X, crv.outWeight.Y, crv.outWeight.Z, crv.outWeight.W)
+                m_Curve.append({
+                    "time": crv.time,
+                    "value": {"X": crv.value.X, "Y": crv.value.Y, "Z": crv.value.Z, "W": crv.value.W},
+                    "inSlope": {"X": crv.inSlope.X, "Y": crv.inSlope.Y, "Z": crv.inSlope.Z, "W": crv.inSlope.W},
+                    "outSlope": {"X": crv.outSlope.X, "Y": crv.outSlope.Y, "Z": crv.outSlope.Z, "W": crv.outSlope.W},
+                })
+                # break
+            # break
+            rotation_curves.append({"path": v.path, "m_Curve": m_Curve})
+
+        # print("====================Position====================")
+
+        for v in clip.m_PositionCurves:
+            # print(v.path, len(v.curve.m_Curve))
+            # if v.path not in path_list: path_list.append(v.path)
+            m_Curve = []
+            for crv in v.curve.m_Curve:
+                # print(crv.value.X, crv.value.Y, crv.value.Z)
+                # print(crv.inSlope.X, crv.inSlope.Y, crv.inSlope.Z)
+                # print(crv.outSlope.X, crv.outSlope.Y, crv.outSlope.Z)
+                m_Curve.append({
+                    "time": crv.time,
+                    "value": {"X": crv.value.X, "Y": crv.value.Y, "Z": crv.value.Z},
+                    "inSlope": {"X": crv.inSlope.X, "Y": crv.inSlope.Y, "Z": crv.inSlope.Z},
+                    "outSlope": {"X": crv.outSlope.X, "Y": crv.outSlope.Y, "Z": crv.outSlope.Z},
+                })
+                # break
+            position_curves.append({"path": v.path, "m_Curve": m_Curve})
+
+        for v in clip.m_ScaleCurves: # ???
+            # print(v.path, len(v.curve.m_Curve))
+            # if v.path not in path_list: path_list.append(v.path)
+            m_Curve = []
+            for crv in v.curve.m_Curve:
+                # print(crv.value.X, crv.value.Y, crv.value.Z)
+                # print(crv.inSlope.X, crv.inSlope.Y, crv.inSlope.Z)
+                # print(crv.outSlope.X, crv.outSlope.Y, crv.outSlope.Z)
+                m_Curve.append({
+                    "time": crv.time,
+                    "value": {"X": crv.value.X, "Y": crv.value.Y, "Z": crv.value.Z},
+                    "inSlope": {"X": crv.inSlope.X, "Y": crv.inSlope.Y, "Z": crv.inSlope.Z},
+                    "outSlope": {"X": crv.outSlope.X, "Y": crv.outSlope.Y, "Z": crv.outSlope.Z},
+                })
+                # break
+            scale_curves.append({"path": v.path, "m_Curve": m_Curve})
+
+    return {
+        "m_RotationCurves": rotation_curves,
+        "m_PositionCurves": position_curves,
+        "m_ScaleCurves": scale_curves,
+    }
+
+def motion_to_json(fn, output, indent=None):
+    import json
+    with open(output, "w") as f:
+        if isinstance(fn, list):
+            json.dump(__parse_motion(fn), fp=f, indent=indent)
+        else:
+            json.dump(__parse_motion([fn]), fp=f, indent=indent)
