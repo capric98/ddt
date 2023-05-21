@@ -6,7 +6,7 @@ cwd = Path(__file__).resolve().parent
 sys.path.append(str(cwd.parent))
 
 from os import path, makedirs, getenv
-from ddt.umamusume import get_live_list, lyrics_to_srt, motion_to_json
+from ddt.umamusume import get_live_list, lyrics_to_srt
 
 
 DOWNLOAD_PATH = path.join("downloads", "umamusume-live")
@@ -85,7 +85,8 @@ if __name__=="__main__":
     #     path.join(DOWNLOAD_PATH, str(live), "extract", f"anm_liv_son{todo}_1st_full.json")
     # )
 
-    motion_to_json(
-        path.join(DOWNLOAD_PATH, str(live), "_3d_cutt", "3d", "motion", "live", "body", f"son{todo}", f"anm_liv_son{todo}_1st"),
-        path.join(DOWNLOAD_PATH, str(live), "extract", f"anm_liv_son{todo}_1st.json")
-    )
+    # motion_to_json(
+    #     path.join(DOWNLOAD_PATH, str(live), "_3d_cutt", "3d", "motion", "live", "body", f"son{todo}", f"anm_liv_son{todo}_1st"),
+    #     path.join(DOWNLOAD_PATH, str(live), "extract", f"anm_liv_son{todo}_1st.json")
+    # )
+    # # Use AssetGuiStudio instead.
