@@ -25,6 +25,8 @@ if __name__ == "__main__":
     print(f"你输入的左足位置：{lx} {ly} {lz}\n")
 
     mmd_factor = thigh_height / uma_thigh_height
+    # print(f"scale factor: {mmd_factor:.2f}")
+    # mmd_factor = 12.5
 
     pos_x = (lx+rx) / 2
     pos_y = thigh_height + uma_shift_z * mmd_factor # see below
