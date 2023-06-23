@@ -68,7 +68,11 @@ bone_map = {
 }
 
 if __name__=="__main__":
-    armature = bpy.data.objects["1st"]
+    for obj in bpy.context.selected_objects:
+        if obj.type == "ARMATURE":
+            armature = obj
+            break
+
     bpy.context.view_layer.objects.active = armature
     armature.select_set(True)
     bpy.ops.object.mode_set(mode='EDIT')
