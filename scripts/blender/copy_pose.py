@@ -31,6 +31,7 @@ def copy_pose_L(bone_name):
     rotation = Quaternion(Vector((n_vec[2], n_vec[0], n_vec[1])), theta)
     #rotation = a_vec.rotation_difference(t_vec)
     #rotation = Quaternion((rotation[0], rotation[1], rotation[3], rotation[2]))
+    if "指" in bone_name: rotation = Quaternion(Vector((n_vec[2], -n_vec[1], -n_vec[0])), theta)
     if "中指" in bone_name: rotation = Quaternion(Vector((-n_vec[0], -n_vec[1], -n_vec[2])), theta)
     if "薬指" in bone_name: rotation = Quaternion(Vector((n_vec[0], -n_vec[1], -n_vec[2])), theta)
     if "小指" in bone_name: rotation = Quaternion(Vector((n_vec[0], -n_vec[1], -n_vec[2])), theta)
@@ -62,7 +63,7 @@ def copy_pose_R(bone_name):
     # print(n_vec, theta/3.1415926*180)
 
     rotation = Quaternion(Vector((n_vec[2], n_vec[0], -n_vec[1])), theta)
-    if "指" in bone_name: rotation = Quaternion(Vector((-n_vec[2], -n_vec[0], n_vec[1])), theta)
+    if "指" in bone_name: rotation = Quaternion(Vector((-n_vec[2], -n_vec[1], n_vec[0])), theta)
     if "中指" in bone_name: rotation = Quaternion(Vector((-n_vec[0], -n_vec[1], -n_vec[2])), theta)
     if "薬指" in bone_name: rotation = Quaternion(Vector((n_vec[0], -n_vec[1], -n_vec[2])), theta)
     if "小指" in bone_name: rotation = Quaternion(Vector((n_vec[0], -n_vec[1], -n_vec[2])), theta)
