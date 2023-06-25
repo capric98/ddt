@@ -83,7 +83,6 @@ if __name__=="__main__":
     bpy.ops.pose.select_all(action='SELECT')
     bpy.ops.pose.transforms_clear()
 
-    for n in ["腕", "ひじ", "手首", "親指０", "親指１", "親指２", "人指１", "人指２", "中指１", "中指２", "薬指１", "薬指２", "小指１", "小指２"]:
-        copy_pose_L("左"+n)
     for n in ["腕", "ひじ", "手首", "親指０", "親指１", "親指２", "人指１", "人指２", "人指３", "中指１", "中指２", "中指３", "薬指１", "薬指２", "薬指３", "小指１", "小指２", "小指３"]:
+        if "３" not in n: copy_pose_L("左"+n)
         copy_pose_R("右"+n)
