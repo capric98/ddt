@@ -9,20 +9,34 @@ from ddt.umamusume.camera import *
 
 morph_dict = {
     "Mouth_4": "口角上げ",
+    "Mouth_5": [("お", 1.0), ("口角上げ", 1.0)],
     "Mouth_6": "ワ1",
+    "Mouth_7": [("お", 1.0), ("口角上げ", 1.0)],
     "Mouth_8": [("い４", 1.0), ("口角上げ", 0.5)],
     "Mouth_9": [("口角下げ1", 1.0), ("口横縮げ", 0.4)],
     "Mouth_14": "あ", # ?
-    "Mouth_28": "お1",
-    "Mouth_29": [("ワ", 0.25)],
+    "Mouth_23": [("あ", 0.4), ("え", 0.5), ("口角上げ", 0.5)],
+    "Mouth_24": [("お", 1.0), ("口角上げ", 1.0)],
+    "Mouth_25": [("い", 1.0), ("口角上げ", 0.5)],
+    "Mouth_26": [("い", 1.0), ("口角上げ", 0.5)],
+    "Mouth_27": [("う", 0.7), ("口角下げ", 0.2)],
+    "Mouth_28": [("お", 0.7), ("口角下げ", 0.2)],
+    "Mouth_29": [("え", 0.5)],
+    "Mouth_30": [("え", 1.0), ("口横広げ", 0.3)],
+    "Mouth_31": [("お", 1.0)],
+    "Mouth_32": [("お", 1.0), ("あ", 0.2), ("口横広げ", 0.15)],
     "Eye_2_L": "ウィンク２",
     "Eye_2_R": "ｳｨﾝｸ２右",
     "Eye_3_L": [("ウィンク", 0.3)],
     "Eye_3_R": [("ウィンク右", 0.3)],
     "Eye_4_L": [("ウィンク", 0.5)],
     "Eye_4_R": [("ウィンク右", 0.5)],
+    "Eye_5_L": [("ウィンク", 1.0)],
+    "Eye_5_R": [("ウィンク右", 1.0)],
     "Eye_7_L": [("ウィンク", 0.1)],
     "Eye_7_R": [("ウィンク右", 0.1)],
+    "Eye_8_L": [("ウィンク", 1)],
+    "Eye_8_R": [("ウィンク右", 1)],
     "Eye_9_L": [("ウィンク２", 0.05)],
     "Eye_9_R": [("ｳｨﾝｸ２右", 0.05)],
     "Eye_12_L": [("びっくり1", 0.3)],
@@ -46,11 +60,7 @@ if __name__=="__main__":
     camera_fn = "son1080_camera"
     # for frame in parse_facial(camera_fn, chara_id=1):
     #     print(frame)
-    shape_keys = parse_facial(camera_fn, chara_id=1)
-    for v in unused_shape_key(shape_keys, morph_dict):
-        print(v)
-
-    shape_keys = to_mmd_shape_key(shape_keys, morph_dict)
+    shape_keys = parse_facial(camera_fn, chara_id=1, map=morph_dict)
 
     with open("output.txt", "w", encoding="utf-8") as f:
         num = len(shape_keys)
