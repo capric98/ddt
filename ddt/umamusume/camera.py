@@ -7,6 +7,41 @@ class MorphFrame:
     frame: int
     weight: float
 
+    def __str__(self) -> str:
+        return f"{self.name},{self.frame},{self.weight}"
+
+
+@dataclass
+class BoneFrame:
+    name: str
+    frame: int
+    xpos: float
+    ypos: float
+    zpos: float
+    xrot: float
+    yrot: float
+    zrot: float
+    phys_disable: bool = False
+    interp_x_ax: float = 20
+    interp_x_ay: float = 20
+    interp_x_bx: float = 107
+    interp_x_by: float = 107
+    interp_y_ax: float = 20
+    interp_y_ay: float = 20
+    interp_y_bx: float = 107
+    interp_y_by: float = 107
+    interp_z_ax: float = 20
+    interp_z_ay: float = 20
+    interp_z_bx: float = 107
+    interp_z_by: float = 107
+    interp_r_ax: float = 20
+    interp_r_ay: float = 20
+    interp_r_bx: float = 107
+    interp_r_by: float = 107
+
+    def __str__(self) -> str:
+        return f"{self.name},{self.frame},{self.xpos},{self.ypos},{self.zpos},{self.xrot},{self.yrot},{self.zrot},{self.phys_disable},{self.interp_x_ax},{self.interp_x_ay},{self.interp_x_bx},{self.interp_x_by},{self.interp_y_ax},{self.interp_y_ay},{self.interp_y_bx},{self.interp_y_by},{self.interp_z_ax},{self.interp_z_ay},{self.interp_z_bx},{self.interp_z_by},{self.interp_r_ax},{self.interp_r_ay},{self.interp_r_bx},{self.interp_r_by}"
+
 
 def contain_id(id: int, mask: int) -> bool:
     # (262143)D = (111111111111111111)B
@@ -161,6 +196,50 @@ def parse_facial(camera_fn, chara_id, map={}) -> list[MorphFrame]:
     result.sort(key=lambda x: f"{x.frame:05d}+{x.name}")
 
     return result
+
+def parse_eyetrack(camera_fn, chara_id, bone_name: list[str]={"左目", "右目"}, scale: float=0.6) -> list[BoneFrame]:
+    import UnityPy
+    from math import asin, degrees
+    for obj in UnityPy.load(camera_fn).objects:
+        if obj.type.name == "MonoBehaviour":
+            if obj.serialized_type.nodes:
+                tree = obj.read_typetree()
+
+    data = tree["facial1Set"] if chara_id==1 else tree["other4FacialArray"][chara_id-2]
+    data = data["eyeTrackKeys"]["thisList"]
+
+    last   = None
+    result = []
+
+    for keyframe in data:
+        frame = (keyframe["frame"]+1) // 2
+        dura  = _time_to_frame(keyframe["time"])
+
+        direct_pos = keyframe["DirectPosition"]
+        dx, dy, dz = direct_pos["x"], direct_pos["y"], direct_pos["z"]
+
+        if abs(dx)<1e-6 and abs(dy)<1e-6 and abs(dx)<1e-6:
+            dx = dy = 0
+            dz = 1
+
+        norm = (dx**2 + dy**2 + dz**2) ** 0.5
+        dx   = dx / norm
+        dy   = dy / norm
+        dz   = dz / norm
+
+        xrot = degrees(asin(dy)) * scale
+        yrot = degrees(asin(dx)) * scale
+        zrot = 0 * scale
+
+        if not last: last = (0,0,0)
+        for bone in bone_name:
+            result.append(BoneFrame(bone,frame,0,0,0,last[0],last[1],last[2]))
+            result.append(BoneFrame(bone,frame+dura,0,0,0,xrot,-yrot,zrot))
+
+        last = (xrot,-yrot,zrot)
+
+    return result
+
 
 def camera_to_txt():
     pass
