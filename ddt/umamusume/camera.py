@@ -43,6 +43,47 @@ class BoneFrame:
         return f"{self.name},{self.frame},{self.xpos},{self.ypos},{self.zpos},{self.xrot},{self.yrot},{self.zrot},{self.phys_disable},{self.interp_x_ax},{self.interp_x_ay},{self.interp_x_bx},{self.interp_x_by},{self.interp_y_ax},{self.interp_y_ay},{self.interp_y_bx},{self.interp_y_by},{self.interp_z_ax},{self.interp_z_ay},{self.interp_z_bx},{self.interp_z_by},{self.interp_r_ax},{self.interp_r_ay},{self.interp_r_bx},{self.interp_r_by}"
 
 
+@dataclass
+class CameraFrame:
+    frame: int
+    dist: float
+    target_x: float
+    target_y: float
+    target_z: float
+    x_rot: float
+    y_rot: float
+    z_rot: float
+    fov: float
+    perspective: bool = False
+    interp_x_ax: float = 20
+    interp_x_ay: float = 20
+    interp_x_bx: float = 107
+    interp_x_by: float = 107
+    interp_y_ax: float = 20
+    interp_y_ay: float = 20
+    interp_y_bx: float = 107
+    interp_y_by: float = 107
+    interp_z_ax: float = 20
+    interp_z_ay: float = 20
+    interp_z_bx: float = 107
+    interp_z_by: float = 107
+    interp_r_ax: float = 20
+    interp_r_ay: float = 20
+    interp_r_bx: float = 107
+    interp_r_by: float = 107
+    interp_dist_ax: float = 20
+    interp_dist_bx: float = 107
+    interp_dist_ay: float = 20
+    interp_dist_by: float = 107
+    interp_fov_ax: float = 20
+    interp_fov_bx: float = 107
+    interp_fov_ay: float = 20
+    interp_fov_by: float = 107
+
+    def __str__(self) -> str:
+        return f"{self.frame},{self.dist},{self.target_x},{self.target_y},{self.target_z},{self.x_rot},{self.y_rot},{self.z_rot},{self.fov},{self.perspective},{self.interp_x_ax},{self.interp_x_ay},{self.interp_x_bx},{self.interp_x_by},{self.interp_y_ax},{self.interp_y_ay},{self.interp_y_bx},{self.interp_y_by},{self.interp_z_ax},{self.interp_z_ay},{self.interp_z_bx},{self.interp_z_by},{self.interp_r_ax},{self.interp_r_ay},{self.interp_r_bx},{self.interp_r_by},{self.interp_dist_ax},{self.interp_dist_bx},{self.interp_dist_ay},{self.interp_dist_by},{self.interp_fov_ax},{self.interp_fov_bx},{self.interp_fov_ay},{self.interp_fov_by}"
+
+
 def contain_id(id: int, mask: int) -> bool:
     # (262143)D = (111111111111111111)B
     return (mask >> (id-1)) % 2 == 1
@@ -239,6 +280,50 @@ def parse_eyetrack(camera_fn, chara_id, bone_name: list[str]={"左目", "右目"
         last = (xrot,-yrot,zrot)
 
     return result
+
+# not finished...
+def parse_camera(camera_fn) -> None:
+    import UnityPy
+    from math import degrees
+    for obj in UnityPy.load(camera_fn).objects:
+        if obj.type.name == "MonoBehaviour":
+            if obj.serialized_type.nodes:
+                tree = obj.read_typetree()
+
+    kf_dict = {}
+    kf_list = []
+
+    for keyframe in tree["cameraPosKeys"]["thisList"]:
+        frame = (keyframe["frame"]+1) // 2
+        if frame not in kf_list:
+            kf_list.append(frame)
+            kf_dict[frame] = []
+        kf_dict[frame].append((-keyframe["position"]["x"],keyframe["position"]["y"],keyframe["position"]["z"]))
+    for keyframe in tree["cameraLookAtKeys"]["thisList"]:
+        frame = (keyframe["frame"]+1) // 2
+        if frame not in kf_list:
+            kf_list.append(frame)
+            kf_dict[frame] = []
+        kf_dict[frame].append((-keyframe["position"]["x"],keyframe["position"]["y"],keyframe["position"]["z"]))
+    for keyframe in tree["cameraFovKeys"]["thisList"]:
+        frame = (keyframe["frame"]+1) // 2
+        if frame not in kf_list:
+            kf_list.append(frame)
+            kf_dict[frame] = []
+        if keyframe["fovType"]==0:
+            kf_dict[frame].append(keyframe["fov"])
+        else:
+            kf_dict[frame].append(degrees(keyframe["fov"])) # my guess
+
+    kf_list.sort()
+    keyframes = [([v]+kf_dict[v]) for v in kf_list]
+    result = []
+
+    for kf in keyframes:
+        if len(kf)!=4:continue
+        dx, dy, dz = kf[1][0]-kf[2][0], kf[1][1]-kf[2][1], kf[1][2]-kf[2][2]
+        dist = (dx**2+dy**2+dz**2) ** 0.5
+        # result.append(CameraFrame(kf[0],dist,kf[2][0],kf[2][1],kf[2][2],0,0,0,kf[3]))
 
 
 def camera_to_txt():
