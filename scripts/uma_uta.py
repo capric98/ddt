@@ -83,3 +83,9 @@ if __name__=="__main__":
         )
 
     mix.export(__OUTPUT__, format=__OUTPUT__.split(".")[-1])
+    # # If you need 24bits output...
+    # mix.export(
+    #     __OUTPUT__,
+    #     format=__OUTPUT__.split(".")[-1],
+    #     parameters=["-c:a", "pcm_s24le"],
+    # )
