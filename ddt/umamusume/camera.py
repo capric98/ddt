@@ -128,10 +128,10 @@ def unused_shape_key(keyframes: MorphFrame | list[MorphFrame], map: dict) -> lis
             unused.append(kf.name)
     return unused
 
-def _time_to_frame(time):
-    return round(time*0.01 / (1/60))
+def _time_to_frame(time, fps=30):
+    return round(time*fps*0.02)
 
-def parse_facial(camera_fn, chara_id, map={}) -> list[MorphFrame]:
+def parse_facial(camera_fn, chara_id, map={}, fps=30) -> list[MorphFrame]:
     import UnityPy
 
     for k, v in map.items():
@@ -177,8 +177,8 @@ def parse_facial(camera_fn, chara_id, map={}) -> list[MorphFrame]:
         }
 
         for keyframe in data:
-            frame = (keyframe["frame"]+1) // 2
-            dura  = _time_to_frame(keyframe["time"])
+            frame = int(0.01 + keyframe["frame"] / (60/fps))
+            dura  = _time_to_frame(keyframe["time"], fps)
 
             ## FOR DEBUG
             # if prefix=="Eye" and frame<400: print(keyframe)
@@ -200,7 +200,7 @@ def parse_facial(camera_fn, chara_id, map={}) -> list[MorphFrame]:
                         if prefix=="Eye" and keyframe["attribute"]==393216:
                             id = 2
                             weight = 1.0
-                            real_dura = 1
+                            real_dura = int(0.01 + 4*fps/60)
                             # blink
                         elif id==0: continue
 
@@ -217,7 +217,7 @@ def parse_facial(camera_fn, chara_id, map={}) -> list[MorphFrame]:
                             result.append(MorphFrame(real_key, frame+real_dura, wp*ratio))
 
                             if prefix=="Eye" and keyframe["attribute"]==393216:
-                                result.append(MorphFrame(real_key, frame+real_dura+1, 0))
+                                result.append(MorphFrame(real_key, frame+real_dura+int(0.01 + 4*fps/60), 0))
                             else:
                                 current[real_key] = (frame+real_dura, real_dura, wp*ratio)
 
