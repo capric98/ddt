@@ -161,7 +161,12 @@ def parse_facial(camera_fn, chara_id, map={}, fps=30) -> list[MorphFrame]:
         for v in tree["ripSyncKeys"]["thisList"]:
             if ("character" not in v) or (contain_id(chara_id, v["character"])):
                 data["mouthKeys"]["thisList"].append(v)
-        data["mouthKeys"]["thisList"].sort(key=lambda x: x["frame"])
+    if "ripSync2Keys" in tree and "thisList" in tree["ripSync2Keys"]:
+        for v in tree["ripSync2Keys"]["thisList"]:
+            if ("character" not in v) or (contain_id(chara_id, v["character"])):
+                data["mouthKeys"]["thisList"].append(v)
+
+    data["mouthKeys"]["thisList"].sort(key=lambda x: x["frame"])
 
     raw_data = data
     raw_data["ebrowKeys"] = raw_data["eyebrowKeys"]
