@@ -51,6 +51,7 @@ def get_live_list(meta: UmaMeta=None, master: UmaMaster=None, text_data: str="te
             assets = []
             assets += _select_assets(meta, f"live/musicscores/m{music_id}%") # lyrics / cyalume / ?
             assets += _select_assets(meta, f"sound/l/{music_id}%")
+            assets += _select_assets(meta, f"sound/b/snd_bgm_cs{music_id}%") # just in case
             assets += _select_assets(meta, f"3d/motion/live/body/son{music_id}%")
             assets += _select_assets(meta, f"3d/effect/live/pfb_eff_live_son{music_id}%") # special stage effect
             assets += _select_assets(meta, f"cutt/cutt_son{music_id}%") # ? TimeLine Controller/Camera
