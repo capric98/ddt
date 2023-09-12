@@ -10,8 +10,8 @@ from pydub import AudioSegment
 from UnityPy import load as unity_load
 
 
-__BGM__ = [] # awb filenames
-__VOC__ = [] # awb filenames
+__BGM__ = [] # awb filenames or lists of audio
+__VOC__ = [] # awb filenames or lists of audio
 
 __CAMERA__ = "" # filename
 __OUTPUT__ = "" # filename
@@ -48,6 +48,8 @@ def mix_segment(keyframe, vocal: list[AudioSegment], ltime: int, rtime: int, str
 
 
 def mix_keylist(mix: AudioSegment, vocal: list[list[AudioSegment]], tree: dict, stream: int, _callback=None) -> AudioSegment:
+    if not tree: return mix
+
     vocal_num = len(vocal)
     ltime = 0
     for v in tree:
@@ -98,31 +100,25 @@ def load_awb(awb_fn: str) -> list[AudioSegment]:
     stream_list.sort(key=get_stream_num)
     stream_list = [os.path.join(temp.name, v) for v in stream_list]
 
-    audio_list = load_wav(stream_list)
+    audio_list = load_seg(stream_list)
 
     temp.cleanup()
 
     return audio_list
 
 
-def load_wav(stream_list: list[str]) -> list[AudioSegment]:
-    audio_list  = []
-
-    for fn in stream_list:
-        if fn.endswith("wav"):
-            audio_list.append(AudioSegment.from_file(fn))
-
-    return audio_list
+def load_seg(stream_list: list[str]) -> list[AudioSegment]:
+    return [AudioSegment.from_file(fn) for fn in stream_list]
 
 
-def load_voc(fn: str | list[str]) -> list[AudioSegment]:
+def load_audio(fn: str | list[str]) -> list[AudioSegment]:
     if isinstance(fn, list):
-        return load_wav(fn)
+        return load_seg(fn)
     else:
-        if fn.endswith(".wav"):
-            return load_wav([fn])
-        else:
+        if fn.endswith(".awb"):
             return load_awb(fn)
+        else:
+            return load_seg([fn])
 
 
 if __name__=="__main__":
@@ -130,12 +126,12 @@ if __name__=="__main__":
     mix = None
 
     for fn in __BGM__:
-        audio_list = load_awb(fn)
+        audio_list = load_audio(fn)
         for audio in audio_list:
             mix = audio if not mix else mix.overlay(audio)
     print("BGM loaded...")
 
-    vocal = [load_voc(fn) for fn in __VOC__]
+    vocal = [load_audio(fn) for fn in __VOC__]
     print(f"{len(vocal)} vocal loaded...")
 
 
@@ -151,7 +147,11 @@ if __name__=="__main__":
 
 
     if "ripSyncKeys" in tree and "thisList" in tree["ripSyncKeys"]: mix = mix_keylist(mix, vocal, tree["ripSyncKeys"]["thisList"], 0, lambda:print(">", end="", flush=True))
-    if "ripSync2Keys" in tree and "thisList" in tree["ripSync2Keys"]: mix = mix_keylist(mix, vocal, tree["ripSync2Keys"]["thisList"], 1, lambda:print(">", end="", flush=True))
+    if "ripSync2Keys" in tree and "thisList" in tree["ripSync2Keys"]:
+        if not tree["ripSync2Keys"]["thisList"]:
+            mix = mix_keylist(mix, vocal, tree["ripSyncKeys"]["thisList"], 1, lambda:print(">", end="", flush=True))
+        else:
+            mix = mix_keylist(mix, vocal, tree["ripSync2Keys"]["thisList"], 1, lambda:print(">", end="", flush=True))
 
 
     mix.export(__OUTPUT__, format=__OUTPUT__.split(".")[-1])
