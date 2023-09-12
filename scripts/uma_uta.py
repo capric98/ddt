@@ -93,15 +93,36 @@ def load_awb(awb_fn: str) -> list[AudioSegment]:
         stream_num = int(fn.split(".")[-2])
         return stream_num
 
-    audio_list  = []
+
     stream_list = os.listdir(temp.name)
     stream_list.sort(key=get_stream_num)
-    for fn in stream_list:
-        if fn.startswith(fn) and fn.endswith("wav"):
-            audio_list.append(AudioSegment.from_file(os.path.join(temp.name, fn)))
+    stream_list = [os.path.join(temp.name, v) for v in stream_list]
+
+    audio_list = load_wav(stream_list)
 
     temp.cleanup()
+
     return audio_list
+
+
+def load_wav(stream_list: list[str]) -> list[AudioSegment]:
+    audio_list  = []
+
+    for fn in stream_list:
+        if fn.endswith("wav"):
+            audio_list.append(AudioSegment.from_file(fn))
+
+    return audio_list
+
+
+def load_voc(fn: str | list[str]) -> list[AudioSegment]:
+    if isinstance(fn, list):
+        return load_wav(fn)
+    else:
+        if fn.endswith(".wav"):
+            return load_wav([fn])
+        else:
+            return load_awb(fn)
 
 
 if __name__=="__main__":
@@ -114,7 +135,7 @@ if __name__=="__main__":
             mix = audio if not mix else mix.overlay(audio)
     print("BGM loaded...")
 
-    vocal = [load_awb(fn) for fn in __VOC__]
+    vocal = [load_voc(fn) for fn in __VOC__]
     print(f"{len(vocal)} vocal loaded...")
 
 
