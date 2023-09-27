@@ -1,6 +1,7 @@
 # coding: utf-8
 from os import path
 from dataclasses import dataclass
+from sqlite3 import Connection
 
 from . import UmaBlob, UmaMeta, UmaMaster
 
@@ -13,9 +14,22 @@ MASTER_CATEGORY = 16
 class UmaLive:
     music_id: str
     name:     str
-    assets:   list[UmaBlob]
+    # assets:   list[UmaBlob]
+    meta:     Connection
     def __str__(self) -> str:
         return f"[{self.music_id}] {self.name}"
+
+    @property
+    def assets(self) -> list[UmaBlob]:
+        assets = []
+        assets += _select_assets(self.meta, f"live/musicscores/m{self.music_id}%") # lyrics / cyalume / ?
+        assets += _select_assets(self.meta, f"sound/l/{self.music_id}%")
+        assets += _select_assets(self.meta, f"sound/b/snd_bgm_cs{self.music_id}%") # just in case
+        assets += _select_assets(self.meta, f"3d/motion/live/body/son{self.music_id}%")
+        assets += _select_assets(self.meta, f"3d/effect/live/pfb_eff_live_son{self.music_id}%") # special stage effect
+        assets += _select_assets(self.meta, f"cutt/cutt_son{self.music_id}%") # ? TimeLine Controller/Camera
+
+        return assets
 
 
 def _select_assets(master: UmaMaster, keyword: str) -> list[str]:
@@ -48,18 +62,10 @@ def get_live_list(meta: UmaMeta=None, master: UmaMaster=None, text_data: str="te
         if music_id in live_data_dict:
             music_name = live_data_dict[music_id][3]
 
-            assets = []
-            assets += _select_assets(meta, f"live/musicscores/m{music_id}%") # lyrics / cyalume / ?
-            assets += _select_assets(meta, f"sound/l/{music_id}%")
-            assets += _select_assets(meta, f"sound/b/snd_bgm_cs{music_id}%") # just in case
-            assets += _select_assets(meta, f"3d/motion/live/body/son{music_id}%")
-            assets += _select_assets(meta, f"3d/effect/live/pfb_eff_live_son{music_id}%") # special stage effect
-            assets += _select_assets(meta, f"cutt/cutt_son{music_id}%") # ? TimeLine Controller/Camera
-
             results.append(UmaLive(
                 music_id = music_id,
                 name = music_name,
-                assets = assets,
+                meta = meta,
             ))
 
 
