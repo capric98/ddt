@@ -4,8 +4,8 @@ from mathutils import Quaternion
 
 
 target_frame = 5000
-uma_armature = bpy.data.objects["pfb_bdy10xx_xx"] # ARMATURE NAME HERE
-new_armature = bpy.data.objects["xxx_arm"]        # ARMATURE NAME HERE
+uma_armature = None
+new_armature = None
 
 
 def copy_pose(bone_name, pre_rot=0):
@@ -28,7 +28,20 @@ def copy_pose(bone_name, pre_rot=0):
     bpy.ops.object.mode_set(mode='OBJECT')
 
 
+def init():
+    global uma_armature, new_armature
+
+    for obj in bpy.data.objects:
+        if obj.type == "ARMATURE":
+            if obj.name.startswith("pfb_bdy") and uma_armature is None:
+                uma_armature = obj
+            if obj.name.endswith("_arm") and new_armature is None:
+                new_armature = obj
+
+
 if __name__=="__main__":
+    init()
+
     print("==IDK why but it works...==")
     bpy.context.scene.frame_set(target_frame)
     bpy.context.view_layer.objects.active = uma_armature

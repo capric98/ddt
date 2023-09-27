@@ -77,11 +77,13 @@ if __name__=="__main__":
     armature.select_set(True)
     bpy.ops.object.mode_set(mode='EDIT')
 
+    __TRIM__ = True
 
     for bone in armature.data.edit_bones:
-        if bone.name.startswith("Sp_"):
+        if __TRIM__ and bone.name.startswith("Sp_"):
             armature.data.edit_bones.remove(bone)
             continue
+
         if bone.name not in bone_map or not bone_map[bone.name]: continue
         print(f"{bone.name} -> {bone_map[bone.name]}")
         bone.name = bone_map[bone.name]
