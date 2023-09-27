@@ -67,13 +67,14 @@ if __name__=="__main__":
     print("\nAssets ✔️")
 
 
-    if not path.exists(path.join(DOWNLOAD_PATH, str(live), "extract")):
-        makedirs(path.join(DOWNLOAD_PATH, str(live), "extract"))
+    if path.exists(path.join(DOWNLOAD_PATH, str(live), "musicscores", f"m{todo}_lyrics")):
+        if not path.exists(path.join(DOWNLOAD_PATH, str(live), "extract")):
+            makedirs(path.join(DOWNLOAD_PATH, str(live), "extract"))
 
-    lyrics_to_srt(
-        path.join(DOWNLOAD_PATH, str(live), "musicscores", f"m{todo}_lyrics"),
-        path.join(DOWNLOAD_PATH, str(live), "extract", f"m{todo}_lyrics.srt"),
-    )
+        lyrics_to_srt(
+            path.join(DOWNLOAD_PATH, str(live), "musicscores", f"m{todo}_lyrics"),
+            path.join(DOWNLOAD_PATH, str(live), "extract", f"m{todo}_lyrics.srt"),
+        )
 
     # motion_to_json(
     #     [
