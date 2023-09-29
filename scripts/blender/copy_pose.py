@@ -51,17 +51,48 @@ if __name__=="__main__":
     bpy.ops.pose.transforms_clear()
 
     # The following angles need to be carefully tweaked on specific model.
-    copy_pose("左腕", 135)
-    copy_pose("左ひじ", 135)
-    copy_pose("右腕", -135)
-    copy_pose("右ひじ", -135)
+    if "青雀" in new_armature.name:
+        copy_pose("左腕", 135)
+        copy_pose("左ひじ", 135)
+        copy_pose("右腕", -135)
+        copy_pose("右ひじ", -135)
 
-    copy_pose("左親指０", 135)
-    copy_pose("左親指１", 135)
-    copy_pose("右親指０", 45)
-    copy_pose("右親指１", 45)
+        copy_pose("左親指０", 135)
+        copy_pose("左親指１", 135)
+        copy_pose("右親指０", 45)
+        copy_pose("右親指１", 45)
 
-    for n in ["人指１", "人指２", "人指３", "中指１", "中指２", "中指３", "薬指１", "薬指２", "薬指３", "小指１", "小指２", "小指３"]:
-        if "３" in n: continue
-        copy_pose("左"+n, 35)
-        copy_pose("右"+n, 125)
+        for n in ["人指１", "人指２", "人指３", "中指１", "中指２", "中指３", "薬指１", "薬指２", "薬指３", "小指１", "小指２", "小指３"]:
+            if "３" in n: continue
+            copy_pose("左"+n, 35)
+            copy_pose("右"+n, 125)
+    elif "符玄" in new_armature.name or "克拉拉" in new_armature.name:
+        copy_pose("左腕", -90)
+        copy_pose("左ひじ", -90)
+        copy_pose("右腕", 90)
+        copy_pose("右ひじ", 90)
+
+        copy_pose("左親指０", -90)
+        copy_pose("左親指１", -90)
+        copy_pose("右親指０", -90)
+        copy_pose("右親指１", -90)
+
+        for n in ["人指１", "人指２", "人指３", "中指１", "中指２", "中指３", "薬指１", "薬指２", "薬指３", "小指１", "小指２", "小指３"]:
+            if "３" in n: continue
+            copy_pose("左"+n, 180)
+            copy_pose("右"+n, 0)
+    else:
+        copy_pose("左腕", 90)
+        copy_pose("左ひじ", 90)
+        copy_pose("右腕", -90)
+        copy_pose("右ひじ", -90)
+
+        copy_pose("左親指０", -180)
+        copy_pose("左親指１", -180)
+        copy_pose("右親指０", 0)
+        copy_pose("右親指１", 0)
+
+        for n in ["人指１", "人指２", "人指３", "中指１", "中指２", "中指３", "薬指１", "薬指２", "薬指３", "小指１", "小指２", "小指３"]:
+            if "３" in n: continue
+            copy_pose("左"+n, 180)
+            copy_pose("右"+n, 0)
