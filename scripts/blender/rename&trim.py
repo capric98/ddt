@@ -2,7 +2,7 @@ import bpy
 
 bone_map = {
     "Position": "全ての親",
-    "Hip": "下半身",
+    "Hip": "センター",
     "Thigh_L": "左足",
     "Knee_L": "左ひざ",
     "Ankle_L": "左足首",
