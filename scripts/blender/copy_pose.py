@@ -66,7 +66,7 @@ if __name__=="__main__":
             if "３" in n: continue
             copy_pose("左"+n, 35)
             copy_pose("右"+n, 125)
-    elif "符玄" in new_armature.name or "克拉拉" in new_armature.name:
+    elif "符玄" in new_armature.name or "克拉拉" in new_armature.name or "桂乃芬" in new_armature.name:
         copy_pose("左腕", -90)
         copy_pose("左ひじ", -90)
         copy_pose("右腕", 90)
