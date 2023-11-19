@@ -39,6 +39,8 @@ def filter_GraffitTag(fn, op):
 def filter_FaceMap(fn, op):
     if re.match(r"W_\d{3}", _base_fn(fn)):
         shutil.copyfile(fn, os.path.join(op, "FaceMap", _base_fn(fn)))
+    if re.match(r"M_\d{3}", _base_fn(fn)):
+        shutil.copyfile(fn, os.path.join(op, "FaceMap", _base_fn(fn)))
 
 def filter_Sticker(fn, op):
     if re.match(r"\d{6}.png", _base_fn(fn)):
