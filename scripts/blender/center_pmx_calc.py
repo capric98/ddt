@@ -6,34 +6,33 @@ uma_dx = 0
 uma_dy = 0.023805 - 0.034437
 uma_dz = 0.989637 - 0.908125
 
-uma_shift_z = 0.908125 - 0.881235
-uma_thigh_height = 0.881235
+uma_center_z = 0.908125
+uma_thigh = 0.352816
+uma_leg   = 0.402078
+
+def pos_to_tuple(pos):
+    x, y, z = pos.split(" ")
+    return (float(x), float(y), float(z))
 
 if __name__ == "__main__":
-    right_thigh = input("右足位置(空格隔开)：")
-    left_thigh  = input("左足位置(空格隔开)：")
+    hip_x, hip_y, hip_z    = pos_to_tuple(input("足位置(空格隔开)："))
+    knee_x, knee_y, knee_z = pos_to_tuple(input("ひざ位置(空格隔开)："))
+    foot_x, foot_y, foot_z = pos_to_tuple(input("足首位置(空格隔开)："))
 
-    rx, ry, rz = right_thigh.split(" ")
-    lx, ly, lz = left_thigh.split(" ")
+    thigh = ((hip_x-knee_x)**2 + (hip_y-knee_y)**2 + (hip_z-knee_z)**2) ** 0.5
+    leg   = ((foot_x-knee_x)**2 + (foot_y-knee_y)**2 + (foot_z-knee_z)**2) ** 0.5
 
-    rx, ry, rz = float(rx), float(ry), float(rz)
-    lx, ly, lz = float(lx), float(ly), float(lz)
+    mmd_factor = leg / uma_leg
+    thigh_factor = thigh / uma_thigh
 
-    thigh_height = (ly+ry) / 2 # ly与ry应该相同，以防万一
+    print(f"scale factor: {mmd_factor:.2f}")
+    print(f"thigh factor: {thigh_factor:.2f}")
 
-    print(f"\n你输入的右足位置：{rx} {ry} {rz}")
-    print(f"你输入的左足位置：{lx} {ly} {lz}\n")
-
-    mmd_factor = thigh_height / uma_thigh_height
-    print(f"scale factor: {mmd_factor:.2f}") # May be useful when exporting motions. (default mmd_factor = 12.5)
-
-    pos_x = (lx+rx) / 2
-    pos_y = thigh_height + uma_shift_z * mmd_factor # see below
-    pos_z = (lz+rz) / 2
+    pos_y = uma_center_z * mmd_factor # see below
 
     offset_x = uma_dx * mmd_factor
     offset_y = uma_dz * mmd_factor # Blender coordinates -> PMX Editor coordinates
     offset_z = uma_dy * mmd_factor # Blender coordinates -> PMX Editor coordinates
 
-    print(f"新的センター Position：{pos_x} {pos_y} {pos_z}")
+    print(f"新的センター Y Position：{pos_y}")
     print(f"新的センター offset：{offset_x} {offset_y} {offset_z}")
