@@ -34,5 +34,5 @@ if __name__ == "__main__":
     offset_y = uma_dz * mmd_factor # Blender coordinates -> PMX Editor coordinates
     offset_z = uma_dy * mmd_factor # Blender coordinates -> PMX Editor coordinates
 
-    print(f"新的センター Y Position：{pos_y}")
+    print(f"新的センター Position：~ {pos_y} {hip_z}")
     print(f"新的センター offset：{offset_x} {offset_y} {offset_z}")
