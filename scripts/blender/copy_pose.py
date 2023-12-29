@@ -81,6 +81,51 @@ if __name__=="__main__":
             if "３" in n: continue
             copy_pose("左"+n, 180)
             copy_pose("右"+n, 0)
+    elif "原神" in new_armature.name:
+        copy_pose("左腕", -90)
+        copy_pose("左ひじ", -90)
+        copy_pose("右腕", 90)
+        copy_pose("右ひじ", 90)
+
+        copy_pose("左親指０", -90)
+        copy_pose("左親指１", -90)
+        copy_pose("右親指０", -90)
+        copy_pose("右親指１", -90)
+
+        for n in ["人指１", "人指２", "人指３", "中指１", "中指２", "中指３", "薬指１", "薬指２", "薬指３", "小指１", "小指２", "小指３"]:
+            if "３" in n: continue
+            copy_pose("左"+n, 180)
+            copy_pose("右"+n, 0)
+    elif "Linette":
+        copy_pose("左腕", -90)
+        copy_pose("左ひじ", -90)
+        copy_pose("右腕", 90)
+        copy_pose("右ひじ", 90)
+
+        copy_pose("左親指０", -90)
+        copy_pose("左親指１", -90)
+        copy_pose("右親指０", -90)
+        copy_pose("右親指１", -90)
+
+        for n in ["人指１", "人指２", "人指３", "中指１", "中指２", "中指３", "薬指１", "薬指２", "薬指３", "小指１", "小指２", "小指３"]:
+            if "３" in n: continue
+            copy_pose("左"+n, 0)
+            copy_pose("右"+n, 180)
+    elif "krr":
+        copy_pose("左腕", -90)
+        copy_pose("左ひじ", -90)
+        copy_pose("右腕", 90)
+        copy_pose("右ひじ", 90)
+
+        copy_pose("左親指０", 90)
+        copy_pose("左親指１", 90)
+        copy_pose("右親指０", 90)
+        copy_pose("右親指１", 90)
+
+        for n in ["人指１", "人指２", "人指３", "中指１", "中指２", "中指３", "薬指１", "薬指２", "薬指３", "小指１", "小指２", "小指３"]:
+            if "３" in n: continue
+            copy_pose("左"+n, 0)
+            copy_pose("右"+n, 180)
     else:
         copy_pose("左腕", 90)
         copy_pose("左ひじ", 90)
