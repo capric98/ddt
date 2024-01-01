@@ -24,7 +24,7 @@ class UmaLive:
         assets = []
         assets += _select_assets(self.meta, f"live/musicscores/m{self.music_id}%") # lyrics / cyalume / ?
         assets += _select_assets(self.meta, f"sound/l/{self.music_id}%")
-        assets += _select_assets(self.meta, f"sound/b/snd_bgm_cs{self.music_id}%") # just in case
+        # assets += _select_assets(self.meta, f"sound/b/snd_bgm_cs{self.music_id}%") # just in case
         assets += _select_assets(self.meta, f"3d/motion/live/body/son{self.music_id}%")
         assets += _select_assets(self.meta, f"3d/effect/live/pfb_eff_live_son{self.music_id}%") # special stage effect
         assets += _select_assets(self.meta, f"cutt/cutt_son{self.music_id}%") # ? TimeLine Controller/Camera
