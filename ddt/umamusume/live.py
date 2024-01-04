@@ -29,6 +29,12 @@ class UmaLive:
         assets += _select_assets(self.meta, f"3d/effect/live/pfb_eff_live_son{self.music_id}%") # special stage effect
         assets += _select_assets(self.meta, f"cutt/cutt_son{self.music_id}%") # ? TimeLine Controller/Camera
 
+        # livesettings
+        # id,type,param1,param2,param3,param4,param5
+        # 1,0,Cutt_son1059,,,,
+        # 2,1,10124,0,,,
+        # 3d/env/live/live10124/pfb_env_live10124_controller000
+
         return assets
 
 
