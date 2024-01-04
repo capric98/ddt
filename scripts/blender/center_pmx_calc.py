@@ -10,6 +10,8 @@ uma_center_z = 0.908125
 uma_thigh = 0.352816
 uma_leg   = 0.402078
 
+_FIXED_FACTOR_ = None
+
 def pos_to_tuple(pos):
     x, y, z = pos.split(" ")
     return (float(x), float(y), float(z))
@@ -22,7 +24,7 @@ if __name__ == "__main__":
     thigh = ((hip_x-knee_x)**2 + (hip_y-knee_y)**2 + (hip_z-knee_z)**2) ** 0.5
     leg   = ((foot_x-knee_x)**2 + (foot_y-knee_y)**2 + (foot_z-knee_z)**2) ** 0.5
 
-    mmd_factor = leg / uma_leg
+    mmd_factor = leg / uma_leg if not _FIXED_FACTOR_ else _FIXED_FACTOR_
     thigh_factor = thigh / uma_thigh
 
     print(f"scale factor: {mmd_factor:.2f}")
