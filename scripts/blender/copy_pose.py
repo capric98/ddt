@@ -51,93 +51,89 @@ if __name__=="__main__":
     bpy.ops.pose.transforms_clear()
 
     # The following angles need to be carefully tweaked on specific model.
-    if "青雀" in new_armature.name:
-        copy_pose("左腕", 135)
-        copy_pose("左ひじ", 135)
-        copy_pose("右腕", -135)
-        copy_pose("右ひじ", -135)
+    presets = {
+        "_DEFAULTS_": {
+            "左腕": 90,
+            "左ひじ": 90,
+            "右腕": -90,
+            "右ひじ": -90,
+            "左親指０": -180,
+            "左親指１": -180,
+            "右親指０": 0,
+            "右親指１": 0,
+            "_FINGERS_": [180, 0],
+        }
+    }
+    presets.update(dict.fromkeys(["青雀"], {
+        "左腕": 135,
+        "左ひじ": 135,
+        "右腕": -135,
+        "右ひじ": -135,
+        "左親指０": 135,
+        "左親指１": 135,
+        "右親指０": 45,
+        "右親指１": 45,
+        "_FINGERS_": [35, 125],
+    }))
+    presets.update(dict.fromkeys(["符玄", "克拉拉", "桂乃芬", "原神"], {
+        "左腕": -90,
+        "左ひじ": -90,
+        "右腕": 90,
+        "右ひじ": 90,
+        "左親指０": -90,
+        "左親指１": -90,
+        "右親指０": -90,
+        "右親指１": -90,
+        "_FINGERS_": [180, 0],
+    }))
+    presets.update(dict.fromkeys(["琳妮特"], {
+        "左腕": -90,
+        "左ひじ": -90,
+        "右腕": 90,
+        "右ひじ": 90,
+        "左親指０": -90,
+        "左親指１": -90,
+        "右親指０": -90,
+        "右親指１": -90,
+        "_FINGERS_": [0, 180],
+    }))
+    presets.update(dict.fromkeys(["绮良良"], {
+        "左腕": -90,
+        "左ひじ": -90,
+        "右腕": 90,
+        "右ひじ": 90,
+        "左親指０": 90,
+        "左親指１": 90,
+        "右親指０": 90,
+        "右親指１": 90,
+        "_FINGERS_": [0, 180],
+    }))
 
-        copy_pose("左親指０", 135)
-        copy_pose("左親指１", 135)
-        copy_pose("右親指０", 45)
-        copy_pose("右親指１", 45)
 
-        for n in ["人指１", "人指２", "人指３", "中指１", "中指２", "中指３", "薬指１", "薬指２", "薬指３", "小指１", "小指２", "小指３"]:
-            if "３" in n: continue
-            copy_pose("左"+n, 35)
-            copy_pose("右"+n, 125)
-    elif "符玄" in new_armature.name or "克拉拉" in new_armature.name or "桂乃芬" in new_armature.name:
-        copy_pose("左腕", -90)
-        copy_pose("左ひじ", -90)
-        copy_pose("右腕", 90)
-        copy_pose("右ひじ", 90)
+    _FINISH_FLAG_ = False
+    for k in presets:
+        if k in new_armature.name:
+            preset = presets[k]
 
-        copy_pose("左親指０", -90)
-        copy_pose("左親指１", -90)
-        copy_pose("右親指０", -90)
-        copy_pose("右親指１", -90)
+            for bn, v in preset.items():
+                if isinstance(v, list):
+                    for n in ["人指１", "人指２", "人指３", "中指１", "中指２", "中指３", "薬指１", "薬指２", "薬指３", "小指１", "小指２", "小指３"]:
+                        if "３" in n: continue
+                        copy_pose("左"+n, v[0])
+                        copy_pose("右"+n, v[1])
+                else:
+                    copy_pose(bn, v)
 
-        for n in ["人指１", "人指２", "人指３", "中指１", "中指２", "中指３", "薬指１", "薬指２", "薬指３", "小指１", "小指２", "小指３"]:
-            if "３" in n: continue
-            copy_pose("左"+n, 180)
-            copy_pose("右"+n, 0)
-    elif "原神" in new_armature.name:
-        copy_pose("左腕", -90)
-        copy_pose("左ひじ", -90)
-        copy_pose("右腕", 90)
-        copy_pose("右ひじ", 90)
+            _FINISH_FLAG_ = True
+            break
 
-        copy_pose("左親指０", -90)
-        copy_pose("左親指１", -90)
-        copy_pose("右親指０", -90)
-        copy_pose("右親指１", -90)
-
-        for n in ["人指１", "人指２", "人指３", "中指１", "中指２", "中指３", "薬指１", "薬指２", "薬指３", "小指１", "小指２", "小指３"]:
-            if "３" in n: continue
-            copy_pose("左"+n, 180)
-            copy_pose("右"+n, 0)
-    elif "Linette":
-        copy_pose("左腕", -90)
-        copy_pose("左ひじ", -90)
-        copy_pose("右腕", 90)
-        copy_pose("右ひじ", 90)
-
-        copy_pose("左親指０", -90)
-        copy_pose("左親指１", -90)
-        copy_pose("右親指０", -90)
-        copy_pose("右親指１", -90)
-
-        for n in ["人指１", "人指２", "人指３", "中指１", "中指２", "中指３", "薬指１", "薬指２", "薬指３", "小指１", "小指２", "小指３"]:
-            if "３" in n: continue
-            copy_pose("左"+n, 0)
-            copy_pose("右"+n, 180)
-    elif "krr":
-        copy_pose("左腕", -90)
-        copy_pose("左ひじ", -90)
-        copy_pose("右腕", 90)
-        copy_pose("右ひじ", 90)
-
-        copy_pose("左親指０", 90)
-        copy_pose("左親指１", 90)
-        copy_pose("右親指０", 90)
-        copy_pose("右親指１", 90)
-
-        for n in ["人指１", "人指２", "人指３", "中指１", "中指２", "中指３", "薬指１", "薬指２", "薬指３", "小指１", "小指２", "小指３"]:
-            if "３" in n: continue
-            copy_pose("左"+n, 0)
-            copy_pose("右"+n, 180)
-    else:
-        copy_pose("左腕", 90)
-        copy_pose("左ひじ", 90)
-        copy_pose("右腕", -90)
-        copy_pose("右ひじ", -90)
-
-        copy_pose("左親指０", -180)
-        copy_pose("左親指１", -180)
-        copy_pose("右親指０", 0)
-        copy_pose("右親指１", 0)
-
-        for n in ["人指１", "人指２", "人指３", "中指１", "中指２", "中指３", "薬指１", "薬指２", "薬指３", "小指１", "小指２", "小指３"]:
-            if "３" in n: continue
-            copy_pose("左"+n, 180)
-            copy_pose("右"+n, 0)
+    if not _FINISH_FLAG_:
+        preset = presets["_DEFAULTS_"]
+        for bn, v in preset.items():
+            if isinstance(v, list):
+                for n in ["人指１", "人指２", "人指３", "中指１", "中指２", "中指３", "薬指１", "薬指２", "薬指３", "小指１", "小指２", "小指３"]:
+                    if "３" in n: continue
+                    copy_pose("左"+n, v[0])
+                    copy_pose("右"+n, v[1])
+            else:
+                copy_pose(bn, v)
