@@ -20,22 +20,26 @@ def pos_to_tuple(pos):
     return (float(x), float(y), float(z))
 
 if __name__ == "__main__":
-    hip_x, hip_y, hip_z    = pos_to_tuple(input("足位置(空格隔开)："))
-    knee_x, knee_y, knee_z = pos_to_tuple(input("ひざ位置(空格隔开)："))
-    foot_x, foot_y, foot_z = pos_to_tuple(input("足首位置(空格隔开)："))
+    if not _FIXED_FACTOR_:
+        hip_x, hip_y, hip_z    = pos_to_tuple(input("足位置(空格隔开)："))
+        knee_x, knee_y, knee_z = pos_to_tuple(input("ひざ位置(空格隔开)："))
+        foot_x, foot_y, foot_z = pos_to_tuple(input("足首位置(空格隔开)："))
 
-    thigh = ((hip_x-knee_x)**2 + (hip_y-knee_y)**2 + (hip_z-knee_z)**2) ** 0.5
-    leg   = ((foot_x-knee_x)**2 + (foot_y-knee_y)**2 + (foot_z-knee_z)**2) ** 0.5
+        thigh = ((hip_x-knee_x)**2 + (hip_y-knee_y)**2 + (hip_z-knee_z)**2) ** 0.5
+        leg   = ((foot_x-knee_x)**2 + (foot_y-knee_y)**2 + (foot_z-knee_z)**2) ** 0.5
 
-    mmd_factor = leg / uma_leg
-    thigh_factor = thigh / uma_thigh
+        mmd_factor = leg / uma_leg
+        thigh_factor = thigh / uma_thigh
 
-    print(f"leg factor: {mmd_factor:.2f}")
-    print(f"thigh factor: {thigh_factor:.2f}")
+        print(f"leg factor: {mmd_factor:.2f}")
+        print(f"thigh factor: {thigh_factor:.2f}")
 
-    mmd_factor = (leg+thigh)/(uma_leg+uma_thigh) if not _FIXED_FACTOR_ else _FIXED_FACTOR_
+        mmd_factor = (leg+thigh)/(uma_leg+uma_thigh)
+        print(f"\nscale factor: {mmd_factor:.2f}")
+    else:
+        mmd_factor = _FIXED_FACTOR_
+        print(f"fixed factor: {mmd_factor:.2f}")
 
-    print(f"\nscale factor: {mmd_factor:.2f}")
 
     mmd_factor /= 12.5
 
