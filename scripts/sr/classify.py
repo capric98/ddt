@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 # coding: utf-8
-import os
 import argparse
+import inspect
+import os
 import re
 import shutil
+import sys
 
 
 def _create_on_not_exist(p):
@@ -16,6 +18,8 @@ def init_output(op):
     _create_on_not_exist(os.path.join(op, "GraffitTag"))
     _create_on_not_exist(os.path.join(op, "FaceMap"))
     _create_on_not_exist(os.path.join(op, "Sticker"))
+    _create_on_not_exist(os.path.join(op, "GachaImg"))
+    _create_on_not_exist(os.path.join(op, "Minimap"))
 
 
 def _base_fn(fn):
@@ -43,8 +47,42 @@ def filter_FaceMap(fn, op):
         shutil.copyfile(fn, os.path.join(op, "FaceMap", _base_fn(fn)))
 
 def filter_Sticker(fn, op):
-    if re.match(r"\d{6}.png", _base_fn(fn)):
+    if re.match(r"\d{6}\.png", _base_fn(fn)):
         shutil.copyfile(fn, os.path.join(op, "Sticker", _base_fn(fn)))
+
+def filter_Minimap(fn, op):
+    if re.match(r"^Minimap_.*\.png", _base_fn(fn)):
+        shutil.copyfile(fn, os.path.join(op, "Minimap", _base_fn(fn)))
+
+def filter_GachaImg(fn, op):
+    if re.match(r"GachaImg.*\.png", _base_fn(fn)):
+        shutil.copyfile(fn, os.path.join(op, "GachaImg", _base_fn(fn)))
+
+def filter_Chap(fn, op):
+    if re.match(r"Chap(_?)\d{2}_", _base_fn(fn)): os.remove(fn)
+def filter_NPC(fn, op):
+    if re.match(r"^NPC_", _base_fn(fn)): os.remove(fn)
+def filter_Monster(fn, op):
+    if re.match(r"^Monster_", _base_fn(fn)): os.remove(fn)
+def filter_Heliobus(fn, op): # 罗浮杂俎？
+    if re.match(r"^Heliobus", _base_fn(fn)): os.remove(fn)
+def filter_miscellaneous(fn, op):
+    if re.match(r"^Metal", _base_fn(fn)): os.remove(fn)
+    if re.match(r"^M_Chap", _base_fn(fn)): os.remove(fn)
+    if re.match(r"^MeetMat", _base_fn(fn)): os.remove(fn)
+    if re.match(r"^UI3D", _base_fn(fn)): os.remove(fn)
+    if re.match(r"^UI_", _base_fn(fn)): os.remove(fn)
+    if re.match(r"^Eff_", _base_fn(fn)): os.remove(fn)
+    if re.match(r"^Objects_Chap", _base_fn(fn)): os.remove(fn)
+    if re.match(r"^MaterialIDV", _base_fn(fn)): os.remove(fn)
+    if re.match(r"^IRI_Line", _base_fn(fn)): os.remove(fn)
+    if re.match(r"^IndStyle", _base_fn(fn)): os.remove(fn)
+    if re.match(r"^Enviro_", _base_fn(fn)): os.remove(fn)
+    if re.match(r"^Common_Game", _base_fn(fn)): os.remove(fn)
+    if re.match(r"^Abyss_", _base_fn(fn)): os.remove(fn)
+
+
+filters = [ obj for name,obj in inspect.getmembers(sys.modules[__name__]) if (inspect.isfunction(obj) and name.startswith("filter")) ]
 
 
 if __name__=="__main__":
@@ -62,13 +100,7 @@ if __name__=="__main__":
         exit(1)
 
     init_output(args.output)
-    filters = [
-        filter_Rank,
-        filter_Avatar,
-        filter_GraffitTag,
-        filter_FaceMap,
-        filter_Sticker,
-    ]
+
     for root, _, files in os.walk(args.input):
         for fn in files:
             for func in filters:
