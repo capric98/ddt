@@ -11,10 +11,27 @@ def __mstime_to_str(t: int) -> str:
 def lyrics_to_srt(input, output):
 
     import UnityPy
+    import requests
 
     count = 0
     last_lyric = ""
+
     with open(output, "w", encoding="utf-8") as f:
+
+        translation = []
+        try:
+            tjson = requests.get("https://raw.githubusercontent.com/MinamiChiwa/Trainers-Legend-G-TRANS/master/localized_data/LIVE.json", timeout=10).json()
+            for (_, v) in tjson.items():
+                v = v.strip()
+                if v: translation.append(v)
+        except:
+            pass
+        else:
+            count += 1
+            print("1", file=f)
+            print("00:00:00,000 --> 00:00:02,000", file=f)
+            print("翻译：\n", file=f)
+
         for _, v in UnityPy.load(input).container.items():
             if v.type.name == "TextAsset":
                 for line in bytes(v.read().script).decode("utf-8").splitlines():
@@ -23,6 +40,11 @@ def lyrics_to_srt(input, output):
 
                     lyric = "".join(content[1:])
                     lyric = lyric.strip()
+
+                    if lyric:
+                        for t in translation:
+                            if t.startswith(lyric):
+                                lyric = t
 
                     if last_lyric:
                         print("{}".format(__mstime_to_str(int(content[0])-1)), file=f)
