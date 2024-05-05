@@ -29,6 +29,8 @@ class UmaLive:
         assets += _select_assets(self.meta, f"3d/effect/live/pfb_eff_live_son{self.music_id}%") # special stage effect
         assets += _select_assets(self.meta, f"cutt/cutt_son{self.music_id}%") # ? TimeLine Controller/Camera
 
+        assets += _select_assets(self.meta, f"livesettings")
+
         # livesettings
         # id,type,param1,param2,param3,param4,param5
         # 1,0,Cutt_son1059,,,,
@@ -38,13 +40,30 @@ class UmaLive:
         return assets
 
 
-def _select_assets(master: UmaMaster, keyword: str) -> list[str]:
+def _select_assets(master: UmaMaster, keyword: str) -> list[UmaBlob]:
     return [UmaBlob(
         type = item[7],
         id = item[0],
         hash = item[6],
         path = item[1],
     ) for item in master.execute(f"SELECT * FROM a WHERE n like ('{keyword}')").fetchall()]
+
+def select_dependencies(master: UmaMaster, keyword: str) -> list[UmaBlob]:
+    record = master.execute(f"SELECT * FROM a WHERE n like ('{keyword}')").fetchone()
+    dependencies = []
+
+    for d in record[2].split(";"):
+        if d=="shader": continue
+        item = master.execute(f"SELECT * FROM a WHERE n like ('{d}')").fetchone()
+
+        dependencies.append(UmaBlob(
+            type = item[7],
+            id = item[0],
+            hash = item[6],
+            path = item[1],
+        ))
+
+    return dependencies
 
 
 def get_live_list(meta: UmaMeta=None, master: UmaMaster=None, text_data: str="text_data") -> list[UmaLive]:

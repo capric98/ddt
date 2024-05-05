@@ -1,16 +1,43 @@
 #!/usr/bin/env python3
 # coding: utf-8
-import requests, sys, time
+import requests, os, sys, time
 from pathlib import Path
 cwd = Path(__file__).resolve().parent
 sys.path.append(str(cwd.parent))
 
 from os import path, makedirs, getenv
-from ddt.umamusume import get_live_list, lyrics_to_srt
+from ddt.umamusume import get_live_list, lyrics_to_srt, select_dependencies
 
 
+client = requests.Session()
+client.proxies = {
+    "http_proxy": getenv("HTTP_PROXY") or getenv("http_proxy") or None,
+    "https_proxy": getenv("HTTPS_PROXY") or getenv("https_proxy") or None,
+}
 DOWNLOAD_PATH = path.join("downloads", "umamusume-live")
 
+
+def download_stream(url: str, output: str) -> float:
+    dura  = 0
+    start = time.time()
+
+    if not path.exists(path.dirname(output)):
+        makedirs(path.dirname(output))
+    if path.exists(output): return dura
+
+    try:
+        resp = client.get(url, stream=True)
+        resp.raise_for_status()
+        with open(output, "wb") as f:
+            for chunk in resp.iter_content(chunk_size=64*1024):
+                f.write(chunk)
+    except Exception as e:
+        print(f"failed to download {url}: {e}")
+    else:
+        end  = time.time()
+        dura = end - start
+
+    return dura
 
 
 if __name__=="__main__":
@@ -32,12 +59,6 @@ if __name__=="__main__":
         print("Live not found!")
         exit(0)
 
-    client = requests.Session()
-    client.proxies = {
-        "http_proxy": getenv("HTTP_PROXY") or getenv("http_proxy") or None,
-        "https_proxy": getenv("HTTPS_PROXY") or getenv("https_proxy") or None,
-    }
-
     live = live_dict[todo]
 
     for blob in live.assets:
@@ -46,25 +67,8 @@ if __name__=="__main__":
         if "musicscores" in blob.path: blob.path=path.join("musicscores", path.basename(blob.path))
 
         output = path.join(DOWNLOAD_PATH, str(live), blob.path)
-        if not path.exists(path.dirname(output)):
-            makedirs(path.dirname(output))
-        if path.exists(output): continue
-
-        start = time.time()
-        try:
-            resp = client.get(blob.download_url, stream=True)
-            resp.raise_for_status()
-            with open(output, "wb") as f:
-                for chunk in resp.iter_content(chunk_size=64*1024):
-                    f.write(chunk)
-        except Exception as e:
-            print(f"failed to download {blob.download_url}: {e}")
-        else:
-            end  = time.time()
-            dura = end - start
-            print(f"download {blob.path} in {dura:.2f}s")
-
-    print("\nAssets ✔️")
+        dura = download_stream(blob.download_url, output)
+        print(f"download {blob.path} in {dura:.2f}s")
 
 
     if path.exists(path.join(DOWNLOAD_PATH, str(live), "musicscores", f"m{todo}_lyrics")):
@@ -76,18 +80,22 @@ if __name__=="__main__":
             path.join(DOWNLOAD_PATH, str(live), "extract", f"m{todo}_lyrics.srt"),
         )
 
-    # motion_to_json(
-    #     [
-    #         path.join(DOWNLOAD_PATH, str(live), "_3d_cutt", "3d", "motion", "live", "body", f"son{todo}", f"anm_liv_son{todo}_1st"),
-    #         path.join(DOWNLOAD_PATH, str(live), "_3d_cutt", "3d", "motion", "live", "body", f"son{todo}", f"anm_liv_son{todo}_1st_ik_base"),
-    #         path.join(DOWNLOAD_PATH, str(live), "_3d_cutt", "3d", "motion", "live", "body", f"son{todo}", f"anm_liv_son{todo}_1st_ik_l"),
-    #         path.join(DOWNLOAD_PATH, str(live), "_3d_cutt", "3d", "motion", "live", "body", f"son{todo}", f"anm_liv_son{todo}_1st_ik_r"),
-    #     ],
-    #     path.join(DOWNLOAD_PATH, str(live), "extract", f"anm_liv_son{todo}_1st_full.json")
-    # )
+    if path.exists(path.join(DOWNLOAD_PATH, str(live), "live", "livesettings")):
+        import UnityPy
+        livesettings = None
+        s = UnityPy.load(path.join(DOWNLOAD_PATH, str(live), "live", "livesettings"))
+        assets = UnityPy.load(path.join(DOWNLOAD_PATH, str(live), "live", "livesettings")).assets[0]
+        for (k, v) in assets.items():
+            asset = v.read()
+            if str(asset.name)==todo:
+                livesettings = asset
 
-    # motion_to_json(
-    #     path.join(DOWNLOAD_PATH, str(live), "_3d_cutt", "3d", "motion", "live", "body", f"son{todo}", f"anm_liv_son{todo}_1st"),
-    #     path.join(DOWNLOAD_PATH, str(live), "extract", f"anm_liv_son{todo}_1st.json")
-    # )
-    # # Use AssetGuiStudio instead.
+        if livesettings:
+            controller_id = livesettings.text.split("\n")[2].split(",")[2]
+            for blob in select_dependencies(live.meta, f"3d/env/live/live{controller_id}/pfb_env_live{controller_id}_controller000"):
+                output = path.join(DOWNLOAD_PATH, str(live), blob.path)
+                dura = download_stream(blob.download_url, output)
+                print(f"download {blob.path} in {dura:.2f}s")
+
+
+    print("\nAssets ✔️")
