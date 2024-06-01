@@ -52,6 +52,13 @@ def select_dependencies(master: UmaMaster, keyword: str) -> list[UmaBlob]:
     record = master.execute(f"SELECT * FROM a WHERE n like ('{keyword}')").fetchone()
     dependencies = []
 
+    dependencies.append(UmaBlob(
+        type = record[7],
+        id = record[0],
+        hash = record[6],
+        path = record[1],
+    ))
+
     for d in record[2].split(";"):
         if d=="shader": continue
         item = master.execute(f"SELECT * FROM a WHERE n like ('{d}')").fetchone()
