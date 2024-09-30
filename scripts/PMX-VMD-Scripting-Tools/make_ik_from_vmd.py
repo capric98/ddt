@@ -311,6 +311,7 @@ def main(moreinfo=True):
         #                                 "Empty input means you are done inputting bones."])
 
         s = None if not bone_pair else bone_pair.pop()
+        if not ik_target_valid_input_check(s): return
 
         # if the input is empty string, then we break and begin executing with current args
         if s == "" or s is None:
