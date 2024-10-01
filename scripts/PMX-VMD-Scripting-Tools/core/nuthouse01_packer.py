@@ -118,7 +118,10 @@ def encode_string_with_escape(a: str) -> bytearray:
 			# overwrite the 'reason' field with the original string it was trying to encode
 			e.reason = a
 			# then return it to be handled outside
-			raise e
+			# raise e
+			core.MY_PRINT_FUNC("error in my_pack(fmt, args_in)")
+			core.MY_PRINT_FUNC(e.__class__.__name__, e)
+			return bytearray(new_a, "utf-8")
 
 def my_pack(fmt:str, args_in: Any) -> bytearray:
 	"""

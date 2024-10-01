@@ -34,7 +34,7 @@ _SCRIPT_VERSION = "Script version:  Nuthouse01 - v0.6.01 - 7/12/2021"
 # if this is true, an IK-disp frame will be created that enables the IK-following
 # if this is false, when this VMD is loaded the IK bones will be moved but the legs won't follow them
 # you will need to manually turn on IK for these bones
-INCLUDE_IK_ENABLE_FRAME = True
+INCLUDE_IK_ENABLE_FRAME = False
 
 
 helptext = '''=================================================
@@ -241,6 +241,11 @@ def main(moreinfo=True):
     # core.MY_PRINT_FUNC("Please specify the VMD dance input file:")
     # input_filename_vmd = core.MY_FILEPROMPT_FUNC("VMD file", ".vmd")
     input_filename_vmd = args["motion"]
+    output_filename_vmd = os.path.splitext(input_filename_vmd)[0] + ".ik.vmd"
+    if os.path.exists(output_filename_vmd) or input_filename_vmd.endswith(".ik.vmd"):
+        core.MY_PRINT_FUNC("Skip: file exists!")
+        return
+
     vmd = vmdlib.read_vmd(input_filename_vmd, moreinfo=moreinfo)
 
     # 2. ask for model X
@@ -311,11 +316,10 @@ def main(moreinfo=True):
         #                                 "Empty input means you are done inputting bones."])
 
         s = None if not bone_pair else bone_pair.pop()
-        if not ik_target_valid_input_check(s): return
 
         # if the input is empty string, then we break and begin executing with current args
-        if s == "" or s is None:
-            break
+        if s == "" or s is None: break
+        if not ik_target_valid_input_check(s): return
 
         # because of ik_target_valid_input_check() it should be guaranteed safe to call split here & resolve them to bones
         ik_foo, target_foo = s.split('/')
@@ -565,12 +569,16 @@ def main(moreinfo=True):
     core.MY_PRINT_FUNC("...done with forward kinematics computation, now writing output...")
 
     if INCLUDE_IK_ENABLE_FRAME:
-        # create a single ikdispframe that enables the ik bones at frame 0
-        ikbones_enable = []
-        for ikbone_name in ikbone_name_list:
-            ikbones_enable.append(vmdstruct.VmdIkbone(name=ikbone_name, enable=True))
-        earliest_timestep = min(invert_boneframe_dest_dict.keys())
-        ikdispframe_list = [vmdstruct.VmdIkdispFrame(f=earliest_timestep, disp=True, ikbones=ikbones_enable)]
+        try:
+            # create a single ikdispframe that enables the ik bones at frame 0
+            ikbones_enable = []
+            for ikbone_name in ikbone_name_list:
+                ikbones_enable.append(vmdstruct.VmdIkbone(name=ikbone_name, enable=True))
+            earliest_timestep = min(invert_boneframe_dest_dict.keys())
+            ikdispframe_list = [vmdstruct.VmdIkdispFrame(f=earliest_timestep, disp=True, ikbones=ikbones_enable)]
+        except:
+            ikdispframe_list = []
+            core.MY_PRINT_FUNC("Warning: IK following will NOT be enabled when this VMD is loaded, you will need enable it manually!")
     else:
         ikdispframe_list = []
         core.MY_PRINT_FUNC("Warning: IK following will NOT be enabled when this VMD is loaded, you will need enable it manually!")
@@ -594,7 +602,6 @@ def main(moreinfo=True):
     # basename_pmx = core.filepath_splitext(core.filepath_splitdir(input_filename_pmx_source)[1])[0]
     # output_filename_vmd = core.filepath_insert_suffix(input_filename_vmd, ("_ik_for_%s" % basename_pmx))
     # output_filename_vmd = core.filepath_get_unused_name(output_filename_vmd)
-    output_filename_vmd = os.path.splitext(args["motion"])[0] + ".ik.vmd"
     vmdlib.write_vmd(output_filename_vmd, vmd_out, moreinfo=moreinfo)
 
     core.MY_PRINT_FUNC("Done!")
