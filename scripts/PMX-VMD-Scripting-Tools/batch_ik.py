@@ -4,6 +4,8 @@ import argparse
 import os
 import shutil
 import subprocess
+import sys
+import time
 from pathlib import Path
 
 __PYTHON__ = shutil.which("python3") if shutil.which("python3") else shutil.which("python")
@@ -25,10 +27,20 @@ if __name__ == "__main__":
     for f in os.listdir(vmd_dir):
         if f.lower().endswith(".vmd"):
             fn = os.path.join(vmd_dir, f)
-
-            subprocess.run([
+            fargs = [
                 __PYTHON__, __SCRIPT__,
-                "--source", uma_pmx,
-                "--target", mmd_pmx,
-                "--motion", fn,
-            ], capture_output=True)
+                "--source", os.path.abspath(uma_pmx),
+                "--target", os.path.abspath(mmd_pmx),
+                "--motion", os.path.abspath(fn),
+            ]
+
+            # for fa in fargs:
+            #     if fa.startswith("--") or fa.lower().endswith(".exe"):
+            #         print(fa, end=" ")
+            #     else:
+            #         print(f"\"{fa}\"", end=" ")
+            # print()
+
+            subprocess.run(fargs, stdout=sys.stdout, stderr=sys.stderr)
+            print("==================================================")
+            time.sleep(3)
