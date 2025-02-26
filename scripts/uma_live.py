@@ -103,11 +103,12 @@ if __name__=="__main__":
             assets = UnityPy.load(path.join(DOWNLOAD_PATH, str(live), "live", "livesettings")).assets[0]
             for (k, v) in assets.items():
                 asset = v.read()
-                if str(asset.name)==todo:
+                if asset.m_Name==todo:
                     livesettings = asset
 
             if livesettings:
-                controller_id = livesettings.text.split("\n")[2].split(",")[2]
+                print(livesettings)
+                controller_id = livesettings.m_Script.split("\n")[2].split(",")[2]
                 for blob in select_dependencies(base, f"3d/env/live/live{controller_id}/pfb_env_live{controller_id}_controller000"):
                     output = path.join(DOWNLOAD_PATH, str(live), blob.path)
                     dura = download_stream(blob.download_url, output)

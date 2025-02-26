@@ -34,7 +34,13 @@ def lyrics_to_srt(input, output):
 
         for _, v in UnityPy.load(input).container.items():
             if v.type.name == "TextAsset":
-                for line in bytes(v.read().script).decode("utf-8").splitlines():
+
+                # try:
+                #     vs = bytes(v.read().script).decode("utf-8")
+                # except Exception as _:
+                #     vs = v.read().m_Script
+
+                for line in v.read().m_Script.splitlines():
                     content = line.strip().split(",")
                     if not content[0].isnumeric(): continue
 
